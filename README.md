@@ -1,2 +1,15 @@
-# random
-A collection of random things that I've descided to put on GitHub.
+# random things
+This is a collection of random things that I've decided to put on GitHub.
+
+
+
+## Note Stitch
+
+Get all the images in a directory and generate a skeletal markdown file with the images ordered by their prefixes... Useful for markdown based note-taking.
+
+[Link](notestitch) 
+
+
+
+
+
