@@ -10,6 +10,10 @@ Get all the images in a directory and generate a skeletal markdown file with the
 [Link](notestitch) 
 
 
+## Web Redirect Server
 
+A small HTTP server that redirects a given path to a url.
+
+[Link](WebRedirect)
 
 
