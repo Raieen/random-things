@@ -16,4 +16,8 @@ A small HTTP server that redirects a given path to a url.
 
 [Link](WebRedirect)
 
+## Bing Wallpaper
 
+Python script that gets the image of the day from Bing and sets that as the wallpaper.
+
+[Link](BingWallpaper)
