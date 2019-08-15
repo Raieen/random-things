@@ -29,4 +29,5 @@ Python script that gets the image of the day from Bing and sets that as the wall
 
 ...
 
-[Link](Market Wall)
+[Link](Market%20Wall)
+
