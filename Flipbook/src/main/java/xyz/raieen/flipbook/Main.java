@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
         // Arg checking
         if (args.length != 6 && args.length != 7) {
-            System.err.println("Usage: ./flipbooktool.jar INPUT_FILE [FRAME_START] FRAME_COUNT PRINT_IMAGES OUTPUT_FOLDER ROWS COLS");
+            System.err.println("Usage: java -jar flipbooktool.jar INPUT_FILE [FRAME_START] FRAME_COUNT PRINT_IMAGES OUTPUT_FOLDER ROWS COLS");
             System.exit(1);
         }
 
