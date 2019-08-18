@@ -15,23 +15,51 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 
-// TODO: Unit tests to be a good person.
 public class Flipbook {
 
     // Constants
-    private final int FRAME_ROWS = 3;
-    private final int FRAME_COLS = 3;
+    private final File file;
+    private int frameStart = 0;
+    private final int frameEnd;
+    private final int rows;
+    private final int cols;
 
-    private File file;
-    private int frameCount;
-
-    public Flipbook(File file, int frameCount) {
+    /**
+     * Flipbook which represents [0, x] frames where
+     * x is frameEnd mod rows / cols (Don't waste paper, just print if you have a full sheet!!)
+     *
+     * @param file     Video file
+     * @param frameEnd frames for the flip book.
+     * @param rows     Rows of imgaes in the sheet
+     * @param cols     Columns of images in the sheet
+     */
+    public Flipbook(File file, int frameEnd, int rows, int cols) {
         this.file = file;
-        this.frameCount = frameCount;
+        this.frameEnd = frameEnd;
+        this.rows = rows;
+        this.cols = cols;
     }
 
     /**
-     * Creates sheets (frameCount mod FRAME_ROWS / FRAME_COLS) of FRAME_ROWS * FRAME_COLS in folder.
+     * Flipbook which represents [frameStart, x] frames where
+     * x is frameEnd mod rows / cols (Don't waste paper, just print if you have a full sheet!!)
+     *
+     * @param file       Video file
+     * @param frameStart starting frame for the video
+     * @param frameEnd   ending frame for the video
+     * @param rows       Rows of imgaes in the sheet
+     * @param cols       Columns of images in the sheet
+     */
+    public Flipbook(File file, int frameStart, int frameEnd, int rows, int cols) {
+        this.file = file;
+        this.frameStart = frameStart;
+        this.frameEnd = frameEnd;
+        this.rows = rows;
+        this.cols = cols;
+    }
+
+    /**
+     * Creates sheets (frameEnd mod rows / cols) of rows * cols in folder.
      *
      * @param folder      folder where the sheets saved to
      * @param printImages prints the images iff true
@@ -40,23 +68,23 @@ public class Flipbook {
         // Need to get the initial frame for image width/height
         BufferedImage frameZero = getImage(0);
         int frameWidth = frameZero.getWidth(), frameHeight = frameZero.getHeight();
-        int imageSheet = 0; // The sheet which has FRAME_ROWS * FRAME_COLS number of frames on it
+        int imageSheet = 0; // The sheet which has rows * cols number of frames on it
 
-        // Go through frameCount frames [0, frameCount-1]
-        for (int frame = 0; frame < frameCount; frame++) {
+        // Go through frameEnd frames [0, frameEnd-1]
+        for (int frame = frameStart; frame < frameEnd; frame++) {
             BufferedImage bufferedImage = new BufferedImage(
-                    frameWidth * FRAME_ROWS, frameHeight * FRAME_COLS, BufferedImage.TYPE_INT_RGB);
+                    frameWidth * rows, frameHeight * cols, BufferedImage.TYPE_INT_RGB);
             Graphics2D graphics2D = bufferedImage.createGraphics();
 
-            // Draw this image sheet of FRAME_ROWS * FRAME_COLS frames.
-            for (int frameX = 0; frameX < FRAME_ROWS; frameX++) {
-                for (int frameY = 0; frameY < FRAME_COLS; frameY++) {
+            // Draw this image sheet of rows * cols frames.
+            for (int frameX = 0; frameX < rows; frameX++) {
+                for (int frameY = 0; frameY < cols; frameY++) {
                     System.out.println(String.format("Drawing frame %d.", frame));
                     BufferedImage frameImage = getImage(frame);
                     graphics2D.drawImage(frameImage, null, frameX * frameWidth, frameY * frameHeight);
                     frame++;
                 }
-            } // TODO: 14/08/19 Some check in here for frame < frameCount.
+            }
 
             ImageIO.write(bufferedImage, "png", new File(String.format("%s/sheet-%d.png", folder, imageSheet)));
             System.out.println(String.format("Generated sheet %d.", imageSheet++));
@@ -67,7 +95,6 @@ public class Flipbook {
             }
         }
     }
-
 
     /**
      * Opens a print dialog and prints the image with the user's specifications from the dialog.
@@ -83,7 +110,8 @@ public class Flipbook {
             pageFormat.setOrientation(PageFormat.LANDSCAPE);
 
             graphics.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
-            graphics.drawImage(bufferedImage, 0, 0, (int) printerJob.defaultPage().getImageableWidth(), (int) printerJob.defaultPage().getImageableHeight(), null);
+            graphics.drawImage(bufferedImage, 0, 0, (int) printerJob.defaultPage().getImageableWidth(),
+                    (int) printerJob.defaultPage().getImageableHeight(), null);
             return Printable.PAGE_EXISTS;
         });
         if (printerJob.printDialog()) printerJob.print();

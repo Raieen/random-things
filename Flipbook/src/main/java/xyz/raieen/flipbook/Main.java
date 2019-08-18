@@ -8,46 +8,56 @@ import java.io.IOException;
 
 /**
  * Generates a set of images that can be printed and turned into a flip book from a given mp4 file.
- * Usage: java -jar flipbooktool.jar INPUT_FILE FRAME_COUNT PRINT_IMAGES OUTPUT_FOLDER
+ * <p>
+ * Usage: ./flipbooktool.jar INPUT_FILE FRAME_COUNT PRINT_IMAGES OUTPUT_FOLDER ROWS COLS
+ * Usage: ./flipbooktool.jar INPUT_FILE FRAME_START FRAME_END PRINT_IMAGES OUTPUT_FOLDER ROWS COLS
+ * <p>
+ * Eg. ./flipbooktool.jar hello.mp4 20 false output/ 2 3
  */
 public class Main {
 
     public static void main(String[] args) {
         // Arg checking
-        if (args.length < 4) {
-            System.err.println("Usage: java -jar flipbooktool.jar INPUT_FILE FRAME_COUNT PRINT_IMAGES OUTPUT_FOLDER");
+        if (args.length != 6 && args.length != 7) {
+            System.err.println("Usage: ./flipbooktool.jar INPUT_FILE [FRAME_START] FRAME_COUNT PRINT_IMAGES OUTPUT_FOLDER ROWS COLS");
             System.exit(1);
         }
 
-        int frames = 0;
+        int startFrameOffset = args.length == 7 ? 1 : 0; // use offset to avoid writing two cases (with/without frameStart)
+
+        String inputFile = args[0], outputFolder = args[3 + startFrameOffset];
+        int startFrame = args.length == 7 ? parseIntegerArgument(args[1]) : 0, endFrame = parseIntegerArgument(args[1 + startFrameOffset]);
+        int rows = parseIntegerArgument(args[4 + startFrameOffset]), cols = parseIntegerArgument(args[5 + startFrameOffset]);
+        boolean printImages = Boolean.parseBoolean(args[2 + startFrameOffset]);
+
+        File output = new File(outputFolder);
+        if (output.exists()) {
+            if (output.isFile() || !output.canWrite()) {
+                System.err.println(String.format("%s is an invalid directory.", outputFolder));
+                System.exit(1);
+            }
+        } else {
+            output.mkdirs();
+        }
+
+        Flipbook flipbook = new Flipbook(new File(inputFile), startFrame, endFrame, rows, cols);
         try {
-            frames = Integer.parseInt(args[1]);
-            if (frames < 0) throw new NumberFormatException();
-        } catch (NumberFormatException e) {
-            System.err.println(String.format("%s is not an integral number.", args[1]));
-            System.exit(1);
-        }
-        boolean print = Boolean.parseBoolean(args[2]);
-
-        // Create OUTPUT_FOLDER if it doesn't exist.
-        File output = new File(args[3]);
-        if (output.exists() && output.isFile() || !output.canWrite()) {
-            System.err.println(String.format("%s is an invalid directory.", args[3]));
-            System.exit(1);
-        }
-        // TODO: 14/08/19 Create directory now.
-
-        System.out.println(String.format("Input File %s", args[0]));
-        System.out.println(String.format("Frame Count %s", frames));
-        System.out.println(String.format("Printing Images? %b", print));
-        System.out.println(String.format("Output Folder %s", args[3]));
-        Flipbook flipbook = new Flipbook(new File(args[0]), frames);
-        try {
-            flipbook.generateImages(args[3], print);
+            flipbook.generateImages(outputFolder, printImages);
         } catch (IOException | JCodecException e) {
             System.err.println(String.format("Something went wrong! %s", e.getMessage()));
         } catch (PrinterException e) {
             System.err.println(String.format("Unable to print images! %s", e.getMessage()));
         }
+    }
+
+    private static int parseIntegerArgument(String arg) {
+        try {
+            int x = Integer.parseInt(arg);
+            if (x < 0) throw new NumberFormatException();
+            return x;
+        } catch (NumberFormatException e) {
+            System.err.println(String.format("%s is not an integral number.", arg));
+        }
+        return 0;
     }
 }
