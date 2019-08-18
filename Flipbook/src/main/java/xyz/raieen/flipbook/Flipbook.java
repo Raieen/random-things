@@ -86,7 +86,7 @@ public class Flipbook {
                 }
             }
 
-            ImageIO.write(bufferedImage, "png", new File(String.format("%s/sheet-%d.png", folder, imageSheet)));
+            ImageIO.write(bufferedImage, "jpg", new File(String.format("%s/sheet-%d.png", folder, imageSheet)));
             System.out.println(String.format("Generated sheet %d.", imageSheet++));
 
             // Print if requested
