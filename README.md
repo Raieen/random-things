@@ -21,13 +21,15 @@ Python script that gets the image of the day from Bing and sets that as the wall
 
 ## Flipbook Tool
 
-...
+A tool for turning mp4 video files to sheets of images which can be cut and turned into a flipbook.
 
 [Link](Flipbook)
 
 ## Market Wall
 
-...
+Inspired by some morning business show (Squawk on the street?) that has this board of some stock market and shows this board when it opens with green/red tiles to show if something is up/down where each tile represents some stock.
+
+Created from an 1 hour coding challenge. 
 
 [Link](Market%20Wall)
 
